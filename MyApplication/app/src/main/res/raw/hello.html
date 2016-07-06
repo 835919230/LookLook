@@ -37,8 +37,10 @@
                    for (var idx in json){
                        console.log(json[idx])
                        var obj = json[idx];
+                       var url = "";
+                       url = 'http://'+host+obj.path;
                        str+='<tr>'+
-                       '<td>'+obj.name+'</td>'+
+                       '<td><a href="'+url+'">'+obj.name+'</a></td>'+
                        '<td>'+obj.lastModified+'</td>'+
                        '<td>'+obj.size+'</td>'+
                        '</tr>';

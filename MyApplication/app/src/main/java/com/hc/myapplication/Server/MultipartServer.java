@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -99,9 +100,101 @@ public class MultipartServer extends NanoHTTPD {
             return responseFile("jquery_form.js");
         }else if (uri.equals("/uploader.swf")){
             return new Response(Response.Status.OK,MimeType.SWF.getType(),FileManager.UPLOADER);
+        }else if (uri.contains(".")&&uri.lastIndexOf(".")!=uri.length()-1){
+            return doDownloadFile(session);
+        }else {
+            return indexResponse();
+        }
+    }
+
+    private Response doDownloadFile(IHTTPSession session) {
+        String uri = session.getUri();
+        String mimeTypeForFile = getMimeTypeForFile(uri);
+        Map<String,String> header = session.getHeaders();
+        Response res = null;
+        File file = new File(FileManager.getmCurrentDir(),uri);
+        Log.i(TAG, "doDownloadFile: 请求文件路径："+file.getAbsolutePath());
+        if (!file.exists())
+            return new Response(Response.Status.NOT_FOUND,NanoHTTPD.MIME_PLAINTEXT,"404,该文件不存在");
+        String etag = Integer.toHexString((file.getAbsolutePath() + file.lastModified() + "" + file.length()).hashCode());
+        long startFrom = 0;
+        long endAt = -1;
+        String range = header.get("range");
+        if (range != null){
+            if (range.startsWith("bytes=")){
+                range = range.substring("bytes=".length());
+                int minus = range.indexOf('-');
+                if (minus > 0){
+                    startFrom = Long.parseLong(range.substring(0,minus));
+                    endAt = Long.parseLong(range.substring(minus+1));
+                }
+            }
         }
 
-        return indexResponse();
+        long fileLen = file.length();
+        if (range != null &&startFrom >=0){
+            if (startFrom >= fileLen){
+                res = new Response(Response.Status.RANGE_NOT_SATISFIABLE,
+                        NanoHTTPD.MIME_PLAINTEXT,"");
+                res.addHeader("Content-Range","bytes 0-0/"+fileLen);
+                res.addHeader("Etag",etag);
+            } else {
+              if (endAt < 0){
+                  endAt = fileLen -1;
+              }
+                long newLen = endAt - startFrom + 1;
+                if (newLen < 0){
+                    newLen = 0;
+                }
+
+                final long dataLen = newLen;
+                try {
+                    FileInputStream fis = new FileInputStream(file){
+                        @Override
+                        public int available() throws IOException {
+                            return (int)dataLen;
+                        }
+                    };
+
+                    fis.skip(startFrom);
+
+                    res = new Response(Response.Status.PARTIAL_CONTENT,mimeTypeForFile,fis);
+                    res.addHeader("Content-Length", "" + dataLen);
+                    res.addHeader("Content-Range", "bytes " + startFrom + "-" + endAt + "/" + fileLen);
+                    res.addHeader("ETag", etag);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    res = new Response(Response.Status.FORBIDDEN,NanoHTTPD.MIME_PLAINTEXT,"FORBIDDEN: Reading file failed.");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    res = new Response(Response.Status.FORBIDDEN,NanoHTTPD.MIME_PLAINTEXT,"FORBIDDEN: Reading file failed.");
+                }
+            }
+        }else {
+            if (etag.equals(header.get("if-none-match")))
+                res = new Response(Response.Status.NOT_MODIFIED,mimeTypeForFile,"");
+            else {
+                try {
+                    res = new Response(Response.Status.OK,mimeTypeForFile,new FileInputStream(file));
+                    res.addHeader("Content-Length", "" + fileLen);
+                    res.addHeader("ETag", etag);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    res = new Response(Response.Status.FORBIDDEN,NanoHTTPD.MIME_PLAINTEXT,"FORBIDDEN: Reading file failed.");
+                }
+            }
+        }
+        return res;
+    }
+
+    private String getMimeTypeForFile(String uri) {
+        int dot = uri.lastIndexOf('.');
+        String MIME_DEFAULT_BINARY = "application/octet-stream";
+        String mimeTypeForFile = null;
+        if (dot > 0){
+            mimeTypeForFile = MimeType.get(uri.substring(dot+1).toLowerCase());
+        }
+        return mimeTypeForFile == null ? MIME_DEFAULT_BINARY : mimeTypeForFile;
     }
 
     /**
@@ -150,7 +243,7 @@ public class MultipartServer extends NanoHTTPD {
                 else if (len < 1024*1024)
                     size = len / 1024 +"."+(len % 1024 / 10 %1024)+"KB";
                 else size = (len / (1024*1024))+"."+(len %(1024*1024)/10%1024)+"MB";
-                fileModels.add(new FileModel(directory.getName(),directory.lastModified(),size));
+                fileModels.add(new FileModel(directory.getName(),directory.lastModified(),size,0,directory.getPath().substring(directory.getPath().indexOf("youqubao")+"youqubao".length())));
             }
         }
 
@@ -171,7 +264,7 @@ public class MultipartServer extends NanoHTTPD {
                 else if (len < 1024*1024)
                     size = len / 1024 +"."+(len % 1024 / 10 %1024)+"KB";
                 else size = (len / (1024*1024))+"."+(len %(1024*1024)/10%1024)+"MB";
-                fileModels.add(new FileModel(f.getName(),f.lastModified(),size));
+                fileModels.add(new FileModel(f.getName(),f.lastModified(),size,1,f.getPath().substring(f.getPath().indexOf("youqubao")+"youqubao".length())));
             }
         }
 
@@ -245,7 +338,9 @@ public class MultipartServer extends NanoHTTPD {
             ioe.printStackTrace();
             return new Response(Response.Status.OK,
                     MimeType.JSON.getType(),
-                    JSON.toJSONString(new UploadResult(false,System.currentTimeMillis() - startTime,ioe.getMessage())));
+                    JSON.toJSONString(new UploadResult(false,
+                            System.currentTimeMillis() - startTime,
+                            ioe.getMessage())));
         }
 
         long endTime = System.currentTimeMillis();

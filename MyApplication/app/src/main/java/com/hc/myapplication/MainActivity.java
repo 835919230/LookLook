@@ -58,13 +58,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
     private void initFiles() {
-        FileManager.writeFile(this,R.raw.hello,FileManager.INDEX,mHelloServer);
-        FileManager.writeFile(this,R.raw.bootstrap,FileManager.BOOTSTRAP,mHelloServer);
-        FileManager.writeFile(this,R.raw.jquery,FileManager.JQUERY,mHelloServer);
-        FileManager.writeFile(this,R.raw.favicon,FileManager.FAVICON,mHelloServer);
-        FileManager.writeFile(this,R.raw.jquery_form,FileManager.JQEURY_FORM,mHelloServer);
-        FileManager.writeFile(this,R.raw.uploader,FileManager.UPLOADER,mHelloServer);
-        FileManager.judgeFileExsits();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                FileManager.writeFile(MainActivity.this,R.raw.hello,FileManager.INDEX,mHelloServer);
+                FileManager.writeFile(MainActivity.this,R.raw.bootstrap,FileManager.BOOTSTRAP,mHelloServer);
+                FileManager.writeFile(MainActivity.this,R.raw.jquery,FileManager.JQUERY,mHelloServer);
+                FileManager.writeFile(MainActivity.this,R.raw.favicon,FileManager.FAVICON,mHelloServer);
+                FileManager.writeFile(MainActivity.this,R.raw.jquery_form,FileManager.JQEURY_FORM,mHelloServer);
+                FileManager.writeFile(MainActivity.this,R.raw.uploader,FileManager.UPLOADER,mHelloServer);
+                FileManager.judgeFileExsits();
+            }
+        }).start();
     }
 
     private void initEvent() {
