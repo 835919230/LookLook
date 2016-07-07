@@ -25,8 +25,6 @@ import java.io.IOException;
 
 
 public class MainActivity extends AppCompatActivity {
-
-    private final int resultCode = 123;
     public static final String TAG = "MainActivity";
     private Button mButton;
     private TextView mTextView;
