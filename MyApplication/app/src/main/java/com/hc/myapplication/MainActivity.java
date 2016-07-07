@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 FileManager.writeFile(MainActivity.this,R.raw.favicon,FileManager.FAVICON,mHelloServer);
                 FileManager.writeFile(MainActivity.this,R.raw.jquery_form,FileManager.JQEURY_FORM,mHelloServer);
                 FileManager.writeFile(MainActivity.this,R.raw.uploader,FileManager.UPLOADER,mHelloServer);
+                FileManager.writeFile(MainActivity.this,R.raw.app,FileManager.APP,mHelloServer);
                 FileManager.judgeFileExsits();
             }
         }).start();

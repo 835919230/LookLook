@@ -23,6 +23,7 @@ public class FileManager {
     public static final String FAVICON = "favicon.ico";
     public static final String JQEURY_FORM = "jquery_form.js";
     public static final String UPLOADER = "uploader.swf";
+    public static final String APP = "app.js";
 
     public static final String TAG = "FileManager";
 

@@ -4,6 +4,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
+import com.hc.myapplication.dto.RenameResult;
 import com.hc.myapplication.dto.UploadResult;
 import com.hc.myapplication.enums.MimeType;
 import com.hc.myapplication.model.FileModel;
@@ -38,6 +39,7 @@ public class MultipartServer extends NanoHTTPD {
     public static String JqueryFormCacheString;
     public static String BootstrapCacheString;
     public static String IndexCacheString;
+    public static String AppJSCacheString;
 
     private String mCurrentDir = Environment.getExternalStorageDirectory().getAbsolutePath().toString()+"/youqubao";
     public File htmlFile = new File(mCurrentDir+"/html");
@@ -48,6 +50,7 @@ public class MultipartServer extends NanoHTTPD {
     public MultipartServer(int port) {
         super(port);
         File f = new File(mCurrentDir);
+        f.delete();
         if (f.exists()&& f.isDirectory())
             Log.i(TAG,"dir exists");
         if (f.exists()&&!f.isDirectory()) {
@@ -92,13 +95,23 @@ public class MultipartServer extends NanoHTTPD {
             return responseFile(FileManager.JQUERY);
         } else if (uri.equalsIgnoreCase("/favicon.ico"))
             return responseFile("favicon.ico");
-        else if (uri.equalsIgnoreCase("/ajax")&&Method.POST.equals(method)){
+        else if (uri.equals("/ajax")&&Method.POST.equals(method)){
             return responseJsonString(session,parms);
-        }else if (uri.equalsIgnoreCase("/jquery_form.js")){
+        } else if (uri.equals("/renamefile")){
+            return doRenameFile(session);
+        } else if (uri.equals("/deletefile")){
+            return doDeleteFile(session);
+        } else if (uri.equals("/makedir")) {
+            return doMakeDir(session);
+        } else if (uri.equalsIgnoreCase("/jquery_form.js")){
             if (JqueryFormCacheString != null)
                 return new Response(Response.Status.OK,MimeType.JAVASCRIPT.getType(),JqueryFormCacheString);
             return responseFile("jquery_form.js");
-        }else if (uri.equals("/uploader.swf")){
+        }else if (uri.equals("/app.js")){
+            if (AppJSCacheString != null)
+                return new Response(Response.Status.OK,MimeType.JAVASCRIPT.getType(),AppJSCacheString);
+            return responseFile("app.js");
+        } else if (uri.equals("/uploader.swf")){
             return new Response(Response.Status.OK,MimeType.SWF.getType(),FileManager.UPLOADER);
         }else if (uri.contains(".")&&uri.lastIndexOf(".")!=uri.length()-1){
             return doDownloadFile(session);
@@ -107,9 +120,130 @@ public class MultipartServer extends NanoHTTPD {
         }
     }
 
+    private Response doMakeDir(IHTTPSession session) {
+        doBeforePost(session);
+        Map<String, String> parms = session.getParms();
+        String filepath = parms.get("filepath");
+        String filename = parms.get("filename");
+        File directory = new File(FileManager.getmCurrentDir()+"/"+filepath+"/"+filename);
+        if (directory.exists())
+            return new Response(Response.Status.OK,
+                    MimeType.JSON.getType(),
+                    JSON.toJSONString(new RenameResult(false,"目录名已经存在，请重新命名")));
+
+        if (directory.mkdir())
+            return new Response(Response.Status.OK,
+                    MimeType.JSON.getType(),
+                    JSON.toJSONString(new RenameResult(true,"目录创建成功")));
+        return new Response(Response.Status.OK,
+                MimeType.JSON.getType(),
+                JSON.toJSONString(new RenameResult(false,"服务器异常")));
+    }
+
+    /**
+     * 删除目录的方法
+     * @param path
+     * @return
+     */
+    private boolean deleteAllFilesOfDir(File path) {
+        if (!path.exists())
+            return false;
+        if (path.isFile()) {
+            path.delete();
+            return true;
+        }
+        File[] files = path.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            deleteAllFilesOfDir(files[i]);
+        }
+        path.delete();
+        return true;
+    }
+
+    /**
+     * 删除文件所用的方法
+     * @Author HC
+     * @param session
+     * @return
+     */
+    private Response doDeleteFile(IHTTPSession session) {
+        doBeforePost(session);
+        Map<String, String> parms = session.getParms();
+        String filepath = parms.get("filepath");
+        Log.i(TAG, "doDeleteFile: filepath:"+filepath);
+        if (filepath == null || "".equals(filepath))
+            return new Response(Response.Status.OK,
+                    MimeType.JSON.getType(),
+                    JSON.toJSONString(new RenameResult(false,"文件不能为空")));
+
+        File file = new File(FileManager.getmCurrentDir()+"/"+filepath);
+        Log.i(TAG, "doDeleteFile: file:"+file);
+        if (!file.exists()){
+            return new Response(Response.Status.OK,
+                    MimeType.JSON.getType(),
+                    JSON.toJSONString(new RenameResult(false,"文件不存在")));
+        }
+
+        if (file.delete() || deleteAllFilesOfDir(file))
+            return new Response(Response.Status.OK,
+                    MimeType.JSON.getType(),
+                    JSON.toJSONString(new RenameResult(true,"文件已删除")));
+
+        return new Response(Response.Status.OK,
+                MimeType.JSON.getType(),
+                JSON.toJSONString(new RenameResult(false,"服务器异常")));
+    }
+
+    /**
+     * 重命名文件的方法
+     * @Author HC
+     * @param session
+     * @return
+     */
+    private Response doRenameFile(IHTTPSession session) {
+        doBeforePost(session);
+        Map<String,String> parms = session.getParms();
+        String oldFilepath = parms.get("oldFilepath");
+        String newFilepath = parms.get("newFilepath");
+        File oldFile = new File(FileManager.getmCurrentDir()+"/"+oldFilepath);
+        Log.i(TAG, "doRenameFile: oldFilepath"+oldFilepath);
+        if (!oldFile.exists())
+            return new Response(Response.Status.OK,
+                    MimeType.JSON.getType(),
+                    JSON.toJSONString(new RenameResult(false,"该文件不存在")));
+
+        String type = oldFilepath.substring(oldFilepath.lastIndexOf('.'));
+
+        File newFile = new File(FileManager.getmCurrentDir()+"/"+newFilepath+type);
+        if (oldFile.renameTo(newFile))
+            return new Response(Response.Status.OK,
+                    MimeType.get("json"),
+                    JSON.toJSONString(new RenameResult(true,"文件重命名成功")));
+        return new Response(Response.Status.OK,
+                MimeType.get("json"),
+                JSON.toJSONString(new RenameResult(false,"文件重命名失败")));
+    }
+
+    private void doBeforePost(IHTTPSession session) {
+        try {
+            session.parseBody(new HashMap<String, String>());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ResponseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 处理下载文件的方法
+     * @Author HC
+     * @param session
+     * @return
+     */
     private Response doDownloadFile(IHTTPSession session) {
         String uri = session.getUri();
-        String mimeTypeForFile = getMimeTypeForFile(uri);
+        //String mimeTypeForFile = getMimeTypeForFile(uri);
+        String mimeTypeForFile = "application/octet-stream";
         Map<String,String> header = session.getHeaders();
         Response res = null;
         File file = new File(FileManager.getmCurrentDir(),uri);
@@ -159,9 +293,12 @@ public class MultipartServer extends NanoHTTPD {
                     fis.skip(startFrom);
 
                     res = new Response(Response.Status.PARTIAL_CONTENT,mimeTypeForFile,fis);
+                    res.addHeader("Accept-Ranges", "bytes");
                     res.addHeader("Content-Length", "" + dataLen);
                     res.addHeader("Content-Range", "bytes " + startFrom + "-" + endAt + "/" + fileLen);
                     res.addHeader("ETag", etag);
+                    res.addHeader("Content-disposition","attachment;filename=\""+file.getName()+"\"");
+                    Log.i(TAG, "doDownloadFile: 第一处地方");
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                     res = new Response(Response.Status.FORBIDDEN,NanoHTTPD.MIME_PLAINTEXT,"FORBIDDEN: Reading file failed.");
@@ -176,8 +313,11 @@ public class MultipartServer extends NanoHTTPD {
             else {
                 try {
                     res = new Response(Response.Status.OK,mimeTypeForFile,new FileInputStream(file));
+                    res.addHeader("Accept-Ranges", "bytes");
                     res.addHeader("Content-Length", "" + fileLen);
                     res.addHeader("ETag", etag);
+                    res.addHeader("Content-disposition","attachment;filename=\""+file.getName()+"\"");
+                    Log.i(TAG, "doDownloadFile: 第二处地方");
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                     res = new Response(Response.Status.FORBIDDEN,NanoHTTPD.MIME_PLAINTEXT,"FORBIDDEN: Reading file failed.");
@@ -214,13 +354,7 @@ public class MultipartServer extends NanoHTTPD {
      * @return Response
      */
     private Response responseJsonString(IHTTPSession session,Map<String,String> params){
-        try {
-            session.parseBody(new HashMap<String, String>());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ResponseException e) {
-            e.printStackTrace();
-        }
+        doBeforePost(session);
         String filePath = params.get("filePath");
         Log.i(TAG, "responseJsonString: filePath:"+filePath);
         File file = new File(mCurrentDir+"/"+filePath);

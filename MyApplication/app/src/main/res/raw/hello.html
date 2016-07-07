@@ -3,7 +3,7 @@
 <head>
     <title>传图App</title>
     <meta charset="utf-8"/>
-    <link rel="stylesheet" type="text/css" href="bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="/bootstrap.css"/>
     <!-- 新 Bootstrap 核心 CSS 文件 -->
     <!--<link rel="stylesheet"-->
           <!--href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">-->
@@ -13,90 +13,75 @@
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <!--<script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>-->
     <script type="text/javascript" src="/jquery_form.js"></script>
+    <script src="/app.js"></script>
     <script>
-        var host = window.location.host;
-        var hostname = window.location.hostname;
-        var href = window.location.href;
-        var pathname = window.location.pathname;
-        var port = window.location.port;
-        console.log("host:"+host);
-        console.log("hostname:"+hostname);
-        console.log("href:"+href);
-        console.log("pathname:"+pathname);
-        console.log("port:"+port);
-        var str = "";
         $(document).ready(function () {
-           $.ajax({
-               type:'post',
-               url:'http://'+host+"/ajax",
-               data:{filePath:pathname},
-               dataType:"json",
-               success:function (json) {
-                   //var dataJson = JSON.stringify(json);
-                   console.log(json);
-                   for (var idx in json){
-                       console.log(json[idx])
-                       var obj = json[idx];
-                       var url = "";
-                       url = 'http://'+host+obj.path;
-                       str+='<tr>'+
-                       '<td><a href="'+url+'">'+obj.name+'</a></td>'+
-                       '<td>'+obj.lastModified+'</td>'+
-                       '<td>'+obj.size+'</td>'+
-                       '</tr>';
-                   }
-                   $('#tbody').append(str);
-               },
-               error:function () {
-                   alert('发生错误');
-                   window.location.href = '/';
-               }
-           });
-        $('#uploadBtn').click(function (e) {
-            $('#uploadForm').ajaxSubmit({
-               url:'http://'+host+'/uploadfile',
-                type:'post',
-                success:function (e) {
-                    alert('上传成功');
-                },
-                error:function (e) {
-                    alert('上传失败');
-                },
-                timeout:300*1000
-            });
+            app.init(app.pathname);
+            app.log();
         })
-        });
     </script>
-    <link href="/favicon.ico" rel="icon" type="image/x-icon" />
 </head>
 <body>
-    <div class="row">
-        <div class="container">
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>文件名</th>
-                    <th>修改时间</th>
-                    <th>文件大小</th>
-                </tr>
-                </thead>
-                <tbody id="tbody">
-
-                </tbody>
-            </table>
+<div class="row">
+    <div class="container">
+        <div class="jumbotron">
+            <h1>欢迎使用传图app！</h1>
+            <p>这是我们的web操作页面，在这个页面可以上传下载你需要的文件哦！</p>
         </div>
     </div>
-    <div class="row">
-        <div class="container">
-            <form role="form" action="/uploadfile" id="uploadForm" method="post" enctype='multipart/form-data'>
-                <div class="form-group">
-                    <label for="inputfile">文件输入</label>
-                    <input type="file" id="inputfile" name="filename">
-                    <p class="help-block">这里是块级帮助文本的实例。</p>
-                </div>
-                <button id="uploadBtn" type="button" class="btn btn-default">提交</button>
-            </form>
-        </div>
+</div>
+<div class="row">
+    <div class="container" id="makeDirContainer">
+        <button id="makeDirBtn" class="btn btn-success" onclick="app.makeDirBtnFunc()">创建新目录</button>
     </div>
+</div>
+<div class="row">
+    <div class="container">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>文件名</th>
+                <th>修改时间</th>
+                <th>文件大小</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="tbody">
+            <tr>
+                <td class="renameTd"><a class="filename" href="javascript:void(0)">交换原理教学大纲1.pdf</a></td>
+                <td>2016-07-01 02:58:34</td>
+                <td>175.6KB</td>
+                <td>
+                    <button class="btn btn-primary renameBtn">重命名</button>
+                    <button class="btn btn-danger deleteBtn">删除</button>
+                </td>
+            </tr>
+            <tr>
+                <td class="renameTd"><a class="filename" href="javascript:void(0)">交换原理教学大纲2.pdf</a></td>
+                <td>2016-07-01 02:58:34</td>
+                <td>175.6KB</td>
+                <td>
+                    <button class="btn btn-primary renameBtn">重命名</button>
+                    <button class="btn btn-danger deleteBtn">删除</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="container">
+        <form class="form-inline" role="form" action="/uploadfile" id="uploadForm" method="post" enctype='multipart/form-data'>
+            <div class="form-group">
+                <label for="inputfile">文件输入</label>
+                <input type="file" id="inputfile" name="filename">
+                <p class="help-block">开始上传你的文件吧！</p>
+            </div>
+            <div class="form-group">
+                <button id="uploadBtn" type="button" class="btn btn-info">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
 </body>
 </html>
