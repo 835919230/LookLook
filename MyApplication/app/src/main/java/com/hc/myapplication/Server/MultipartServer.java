@@ -360,6 +360,8 @@ public class MultipartServer extends NanoHTTPD {
         File file = new File(mCurrentDir+"/"+filePath);
         List<FileModel> fileModels = new ArrayList<>(20);
         Log.i(TAG, "responseJsonString: file:"+file.toString());
+        if (file.list().length<=0)
+            return new Response(Response.Status.OK,MimeType.JSON.getType(),JSON.toJSONString(""));
         List<File> directories = Arrays.asList(file.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String filename) {
@@ -448,6 +450,7 @@ public class MultipartServer extends NanoHTTPD {
             return new Response(re.getStatus(), MIME_PLAINTEXT, re.getMessage());
         }
         String filename = params.get(filenameParam);
+        String pathname = params.get("pathname");
         String tmpFilePath = files.get(filenameParam);
         Log.i(TAG,"filename:"+filename);
         Log.i(TAG,"tmpFilePath:"+tmpFilePath);
@@ -456,7 +459,7 @@ public class MultipartServer extends NanoHTTPD {
                     MimeType.JSON.getType(),
                     JSON.toJSONString(new UploadResult(false,System.currentTimeMillis() - startTime,"不能空文件哦！")));
         }
-        File dst = new File(mCurrentDir,filename);
+        File dst = new File(mCurrentDir+"/"+pathname+"/"+filename);
         if (dst.exists()) {
             // Response for confirm to overwrite
             return new Response(Response.Status.OK,
