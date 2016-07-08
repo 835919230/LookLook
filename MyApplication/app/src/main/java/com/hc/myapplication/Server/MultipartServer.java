@@ -212,6 +212,15 @@ public class MultipartServer extends NanoHTTPD {
                     MimeType.JSON.getType(),
                     JSON.toJSONString(new RenameResult(false,"该文件不存在")));
 
+        if (oldFile.isDirectory())
+        {
+            File newFile = new File((FileManager.getmCurrentDir()+"/"+newFilepath));
+            oldFile.renameTo(newFile);
+            return new Response(Response.Status.OK,
+                    MimeType.get("json"),
+                    JSON.toJSONString(new RenameResult(true,"文件重命名成功")));
+        }
+
         String type = oldFilepath.substring(oldFilepath.lastIndexOf('.'));
 
         File newFile = new File(FileManager.getmCurrentDir()+"/"+newFilepath+type);
