@@ -48,10 +48,6 @@ var app = {
                 }
                 $('#tbody').html(str);
 
-                $('#uploadBtn').click(function (e) {
-                                app.uploadFile();
-                            });
-
                             $('.deleteBtn').click(function (e) {
                                 if (!confirm("确定要删除该文件吗？")){
                                     e.preventDefault();

@@ -18,6 +18,9 @@
         $(document).ready(function () {
             app.init(app.pathname);
             app.log();
+             $('#uploadBtn').click(function (e) {
+                                app.uploadFile();
+                            });
         })
     </script>
 </head>
