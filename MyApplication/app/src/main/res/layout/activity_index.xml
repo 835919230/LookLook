@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+    <com.hc.myapplication.TitleLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </com.hc.myapplication.TitleLayout>
+
+    <Button
+        android:id="@+id/startServer"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="180dp"
+        android:textColor="#fff"
+        android:background="@drawable/red_button_72px_1096012"
+        android:text="WIFI传图"/>
+
+</LinearLayout>

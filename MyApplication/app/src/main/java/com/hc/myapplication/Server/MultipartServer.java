@@ -1,5 +1,8 @@
 package com.hc.myapplication.Server;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
@@ -13,11 +16,11 @@ import com.hc.myapplication.utils.FileManager;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -494,6 +497,14 @@ public class MultipartServer extends NanoHTTPD {
         return new Response(Response.Status.OK,
                 MimeType.JSON.getType(),
                 JSON.toJSONString(new UploadResult(true,endTime - startTime,"上传成功！")));
+
+        /*
+        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Uri uri = Uri.fromFile(src);
+        intent.setData(uri);
+        ((Activity)getContext()).context.sendBroadcast(intent);
+        */
+
     }
 
     /**
