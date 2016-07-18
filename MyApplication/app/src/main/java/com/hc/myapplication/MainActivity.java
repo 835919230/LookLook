@@ -157,4 +157,26 @@ public class MainActivity extends AppCompatActivity {
             mHelloServer.stop();
         super.onDestroy();
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mHelloServer.isAlive()) {
+            Log.i(TAG, "onStop: Server is Alive!!!!!!!!!");
+            mHelloServer.stop();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!mHelloServer.isAlive()) {
+            Log.i(TAG, "onResume: Server 不是活着的！！！！！");
+            try {
+                mHelloServer.start();
+            } catch (IOException e) {
+                Log.e(TAG, "onResume: 发生错误了！", e);
+            }
+        }
+    }
 }
