@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Created by 诚 on 2016/7/2.
+ * Created by 诚 on 2016/7/19.
  */
 public class FileManager {
     public static final String JQUERY = "jquery.js";
@@ -24,16 +24,12 @@ public class FileManager {
     public static final String JQEURY_FORM = "jquery_form.js";
     public static final String UPLOADER = "uploader.swf";
     public static final String APP = "app.js";
-
     public static final String TAG = "FileManager";
-
     private static final String mCurrentDir = Environment.getExternalStorageDirectory().getAbsolutePath().toString()+"/youqubao";
     private static final File htmlFile = new File(mCurrentDir+"/html");
-
     public static String getmCurrentDir() {
         return mCurrentDir;
     }
-
     public static boolean judgeFileExsits() {
         File bootstrapFile = new File(htmlFile.toString()+"/"+BOOTSTRAP);
         File indexFile = new File(htmlFile.toString()+"/"+INDEX);
@@ -48,7 +44,6 @@ public class FileManager {
         else {
             Log.i(TAG, "judgeFileExsits: "+false);return false;}
     }
-
     public static void writeFile(final Activity activity, int id, String filename, MultipartServer server){
         InputStream in = activity.getResources().openRawResource(id);
         File file = new File(htmlFile.toString()+"/"+filename);

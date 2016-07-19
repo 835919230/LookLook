@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="#f2ecec">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="350dp">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/server_bg"/>
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:background="@drawable/wifi"
+            android:layout_gravity="center"/>
+    </FrameLayout>
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:textSize="16sp"
+            android:text="请打开电脑在浏览器上输入如下地址："/>
+
+        <Button
+            android:id="@+id/btn_ip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#fcfafa"
+            android:textSize="20sp"
+            android:text="点击启动服务器"
+            android:background="@color/colorPrimary"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:text="服务器运行期间请勿关闭App"/>
+    </LinearLayout>
+
+</LinearLayout>
