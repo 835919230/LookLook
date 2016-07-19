@@ -3,8 +3,10 @@ package com.hc.myapplication;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,7 +23,14 @@ import com.xys.libzxing.zxing.activity.CaptureActivity;
 import com.xys.libzxing.zxing.encoding.EncodingUtils;
 
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import static com.hc.myapplication.R.id.btn_send;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -36,11 +45,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView ipTextView;
     private MultipartServer mHelloServer;
 
+    private Button btnSend;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().hide();
         mHelloServer = new MultipartServer(8080);//默认8080
         initView();
         initEvent();
@@ -54,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
         }
         //内部文件 openFileOutput;
         //       openFileInput;
+
+        Log.i(TAG, "onCreate: 根目录:"+FileManager.getmCurrentDir());
 
     }
     private void initFiles() {
@@ -71,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
+
+    private Handler mHandler = new Handler();
 
     private void initEvent() {
         mButton.setOnClickListener(new View.OnClickListener() {
@@ -105,6 +119,45 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String host = (String) ipTextView.getText();
+                        if (host == null || host.length() <= 0){
+                            Toast.makeText(MainActivity.this,"还没启动服务器",Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        try {
+                            URL url = new URL("http://"+getLocalIpStr(MainActivity.this)+":8080/123.jpg");
+                            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                            InputStream in = conn.getInputStream();
+                            ByteArrayOutputStream out = new ByteArrayOutputStream();
+                            int byteRead = 0;
+                            byte[] buffer = new byte[1024];
+                            while ((byteRead = in.read(buffer)) > 0)
+                                out.write(buffer,0,byteRead);
+
+                            final Bitmap bitmap = BitmapFactory.decodeByteArray(out.toByteArray(),0,out.toByteArray().length);
+                            mHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ((ImageView)findViewById(R.id.downloadPhoto)).setImageBitmap(bitmap);
+                                }
+                            });
+                        } catch (MalformedURLException e) {
+                            Log.e(TAG, "onClick: ",e );
+                        } catch (IOException e) {
+                            Log.e(TAG, "onClick: ", e);
+                        }
+                    }
+                }).start();
+            }
+        });
     }
 
     @Override
@@ -127,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
 
         startButton = (Button) findViewById(R.id.btn_start);
         ipTextView = (TextView) findViewById(R.id.tv_ip);
+        btnSend = (Button) findViewById(btn_send);
     }
 
     /**
