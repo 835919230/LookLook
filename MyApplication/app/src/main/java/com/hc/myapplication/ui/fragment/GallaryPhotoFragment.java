@@ -61,7 +61,7 @@ public class GallaryPhotoFragment extends Fragment {
             @Override
             public boolean accept(File file, String s) {
                 File f = new File(file,s);
-                Log.i(TAG, "accept: 扫描到的文件名："+f.getName());
+                //Log.i(TAG, "accept: 扫描到的文件名："+f.getName());
                 return !f.getName().equals("html");
             }
         });
@@ -74,7 +74,7 @@ public class GallaryPhotoFragment extends Fragment {
                 item.setTitle(file.getName());
                 item.setDate(new Date(file.lastModified()));
                 item.setPath(file.getPath());
-                Log.i(TAG, "addPhotoItems: 文件Path:"+item.getPath());
+                //Log.i(TAG, "addPhotoItems: 文件Path:"+item.getPath());
                 mItems.add(item);
             } else {
                 addPhotoItems(file);
@@ -149,9 +149,9 @@ public class GallaryPhotoFragment extends Fragment {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 int[] lastCompletelyVisibleItemPositions = mLayoutManager.findLastCompletelyVisibleItemPositions(new int[2]);
-                Log.i(TAG, "onScrolled: 最后一个可见的pisition："+lastCompletelyVisibleItemPositions[1]);
+                //Log.i(TAG, "onScrolled: 最后一个可见的pisition："+lastCompletelyVisibleItemPositions[1]);
                 int lastVisiblePosition = lastCompletelyVisibleItemPositions[1];
-                Log.i(TAG, "onScrolled: mItems.SIze:"+mItems.size());
+                //Log.i(TAG, "onScrolled: mItems.SIze:"+mItems.size());
                 if (!mSwipeRefreshLayout.isRefreshing()
                         && (lastVisiblePosition == page * photoNumPer - 1 || lastVisiblePosition == mItems.size()-1)) {
                     getMoreItems();
