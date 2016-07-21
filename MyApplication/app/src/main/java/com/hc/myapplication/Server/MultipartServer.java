@@ -35,7 +35,7 @@ import fi.iki.elonen.NanoHTTPD;
 public class MultipartServer extends NanoHTTPD {
     private final String TAG = "upload";
 
-    private final String filenameParam = "filename";
+//    private final String filenameParam = "filename";
     protected final String fileUploadPath = "/uploadfile";
 
     public static String JqueryCacheString;
@@ -439,7 +439,7 @@ public class MultipartServer extends NanoHTTPD {
                 .append("<body>");
 
         sb.append("<form action='"+fileUploadPath+"' method = 'post' enctype='multipart/form-data'>")
-                .append("<input type='file' name='"+filenameParam+"'>")
+                .append("<input type='file' name='"+"filename"+"'>")
                 .append("<input type='submit' value='提交'>")
                 .append("</form>");
         sb.append("</html>");
@@ -464,9 +464,10 @@ public class MultipartServer extends NanoHTTPD {
         } catch (ResponseException re) {
             return new Response(re.getStatus(), MIME_PLAINTEXT, re.getMessage());
         }
-        String filename = params.get(filenameParam);
+        String filename = params.get("filename1");
+        Log.i(TAG, "doUploadFile: entrySet.size():"+files.entrySet().size());
         String pathname = params.get("pathname");
-        String tmpFilePath = files.get(filenameParam);
+        String tmpFilePath = files.get("filename1");
         Log.i(TAG,"filename:"+filename);
         Log.i(TAG,"tmpFilePath:"+tmpFilePath);
         if (null == filename || null == tmpFilePath) {
