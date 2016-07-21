@@ -39,7 +39,7 @@ public class GallaryPhotoFragment extends Fragment {
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private List<PhotoItem> mItems = new ArrayList<>();
-    private RecyclerView.Adapter mAdapter;
+    private PhotoAdapter mAdapter;
 
     private int page = 1;
     private int photoNumPer = 10;
@@ -89,7 +89,7 @@ public class GallaryPhotoFragment extends Fragment {
     private void setupAdapter(){
         List<PhotoItem> items;
         if (mItems.size() > photoNumPer)
-            items = mItems.subList(0,photoNumPer);
+            items = mItems.subList((page - 1) * photoNumPer,photoNumPer);
         else items = mItems;
         mAdapter = new PhotoAdapter(items);
         if (isAdded())
@@ -98,8 +98,27 @@ public class GallaryPhotoFragment extends Fragment {
         Log.i(TAG, "setupAdapter: Adapter的Size："+mItems.size());
     }
 
-    public void getItems() {
+    private void getMoreItems() {
+        page ++;
+        int remain = mItems.size() - (page - 1) * photoNumPer;
+        int toGet;
+        if (remain > photoNumPer) {
+            toGet = page * photoNumPer;
+        } else {
+            toGet = (page - 1) * photoNumPer + remain;
+        }
+        List<PhotoItem> toAdds = mItems.subList((page-1)*photoNumPer,toGet);
+        mAdapter.items.addAll(toAdds);
+        mAdapter.notifyItemRangeInserted((page-1)*photoNumPer,toGet);
+    }
 
+    private void refresh(){
+        page = 1;
+        mItems.clear();
+        addPhotoItems(new File(FileManager.getmCurrentDir()));
+        setupAdapter();
+        mAdapter.notifyDataSetChanged();
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Nullable
@@ -113,9 +132,8 @@ public class GallaryPhotoFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-
-
-                Snackbar.make(view,"刷新~",Snackbar.LENGTH_SHORT)
+                refresh();
+                Snackbar.make(view,"刷新完成~",Snackbar.LENGTH_SHORT)
                         .setAction("我造了！", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -159,7 +177,7 @@ public class GallaryPhotoFragment extends Fragment {
 
     private class PhotoAdapter extends RecyclerView.Adapter<PhotoHolder>{
 
-        private List<PhotoItem> items;
+        public List<PhotoItem> items;
 
         public PhotoAdapter(List<PhotoItem> l){
             items = l;
