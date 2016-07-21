@@ -7,15 +7,15 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="350dp">
+        android:layout_height="320dp">
         <ImageView
+            android:id="@+id/iv_server_bg"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/server_bg"/>
+            android:layout_height="match_parent"/>
         <ImageView
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:background="@drawable/wifi"
+            android:background="@mipmap/wifi"
             android:layout_gravity="center"/>
     </FrameLayout>
     <LinearLayout

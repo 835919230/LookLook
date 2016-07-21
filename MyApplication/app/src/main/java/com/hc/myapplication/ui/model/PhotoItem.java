@@ -1,4 +1,4 @@
-package com.hc.myapplication;
+package com.hc.myapplication.ui.model;
 
 import java.util.Date;
 

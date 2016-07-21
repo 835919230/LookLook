@@ -1,31 +1,32 @@
-package com.hc.myapplication;
+package com.hc.myapplication.ui.fragment;
 
 import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.hc.myapplication.R;
 import com.hc.myapplication.Server.MultipartServer;
+import com.hc.myapplication.utils.FileManager;
 
 import java.io.IOException;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * Created by 诚 on 2016/7/19.
  */
 public class ServerFragment extends Fragment {
-
+    public final static int id = 0;
 
     private String TAG = "ServerFragment";
 
@@ -36,8 +37,8 @@ public class ServerFragment extends Fragment {
     }
 
     private Button mButton;
+    private ImageView ivServerBg;
 
-    //@OnClick(R.id.btn_ip)
     public void startServer(View view){
         if (!mServer.isAlive()){
             try {
@@ -50,14 +51,30 @@ public class ServerFragment extends Fragment {
         } else {
 
         }
-        Toast.makeText(getActivity(),"Click",Toast.LENGTH_SHORT).show();
+        Snackbar.make(getView(),"服务器已启动",Snackbar.LENGTH_SHORT).show();
+    }
+
+    private void initFiles() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                FileManager.writeFile(getActivity(),R.raw.hello,FileManager.INDEX,mServer);
+                FileManager.writeFile(getActivity(),R.raw.bootstrap,FileManager.BOOTSTRAP,mServer);
+                FileManager.writeFile(getActivity(),R.raw.jquery,FileManager.JQUERY,mServer);
+                FileManager.writeFile(getActivity(),R.raw.favicon,FileManager.FAVICON,mServer);
+                FileManager.writeFile(getActivity(),R.raw.jquery_form,FileManager.JQEURY_FORM,mServer);
+                FileManager.writeFile(getActivity(),R.raw.uploader,FileManager.UPLOADER,mServer);
+                FileManager.writeFile(getActivity(),R.raw.app,FileManager.APP,mServer);
+                FileManager.judgeFileExsits();
+            }
+        }).start();
     }
 
     private void updateView(){
         Log.i(TAG, "updateView: 服务器的运行状态:"+(mServer.isAlive()?"还活着":"死了"));
         if (mServer == null || !mServer.isAlive())
             return;
-        mButton.setText("http://"+getLocalIpStr(getContext())+":"+mServer.mPort);
+        mButton.setText("http".toLowerCase()+"://"+getLocalIpStr(getContext())+":"+mServer.mPort);
         mButton.setEnabled(false);
         Log.i(TAG, String.valueOf("updateView: "+mButton == null));
     }
@@ -67,6 +84,7 @@ public class ServerFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate: Fragment Create");
         updateView();
+        initFiles();
     }
 
     @Override
@@ -90,8 +108,8 @@ public class ServerFragment extends Fragment {
                 startServer(view);
             }
         });
-
-//        ButterKnife.bind(this,view);
+        ivServerBg = (ImageView) view.findViewById(R.id.iv_server_bg);
+        Glide.with(this).load(R.mipmap.server_bg).into(ivServerBg);
         return view;
     }
 
