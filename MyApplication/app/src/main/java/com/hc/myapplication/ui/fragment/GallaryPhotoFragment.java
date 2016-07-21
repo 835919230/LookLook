@@ -40,6 +40,7 @@ public class GallaryPhotoFragment extends Fragment {
 
     private List<PhotoItem> mItems = new ArrayList<>();
     private PhotoAdapter mAdapter;
+    private StaggeredGridLayoutManager mLayoutManager;
 
     private int page = 1;
     private int photoNumPer = 10;
@@ -92,10 +93,8 @@ public class GallaryPhotoFragment extends Fragment {
             items = mItems.subList((page - 1) * photoNumPer,photoNumPer);
         else items = mItems;
         mAdapter = new PhotoAdapter(items);
-        if (isAdded())
-            mRecyclerView.setAdapter(mAdapter);
-
-        Log.i(TAG, "setupAdapter: Adapter的Size："+mItems.size());
+        mAdapter.notifyDataSetChanged();
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     private void getMoreItems() {
@@ -112,39 +111,63 @@ public class GallaryPhotoFragment extends Fragment {
         mAdapter.notifyItemRangeInserted((page-1)*photoNumPer,toGet);
     }
 
-    private void refresh(){
-        page = 1;
+    private void clearCache(){
         mItems.clear();
+    }
+    private void initViews(final View view) {
+        initRecyclerView(view);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                initRecyclerView(view);
+                Snackbar.make(view,"刷新完成~",Snackbar.LENGTH_SHORT).show();
+                mSwipeRefreshLayout.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                });
+            }
+        });
+        Log.i(TAG, "onCreate: 跳出循环了！");
+    }
+
+    private void initRecyclerView(View view) {
+        page = 1;
         addPhotoItems(new File(FileManager.getmCurrentDir()));
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.photo_recycler_view);
+        mLayoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                boolean isBottom = mLayoutManager.findLastCompletelyVisibleItemPositions(
+//                        new int[2])[1] >= mAdapter.getItemCount() - PRELOAD_SIZE;
+//                if (!mSwipeRefreshLayout.isRefreshing() && isBottom)
+//                {
+//                    if (!mIsLoadMore)
+//                    {
+//                        mSwipeRefreshLayout.setRefreshing(true);
+//                        page++;
+//                        getGankMeizi();
+//                    } else
+//                    {
+//                        mIsLoadMore = false;
+//                    }
+//                }
+                int[] lastCompletelyVisibleItemPositions = mLayoutManager.findLastCompletelyVisibleItemPositions(new int[2]);
+                Log.i(TAG, "onScrolled: 最后一个可见的pisition："+lastCompletelyVisibleItemPositions[1]);
+            }
+        });
         setupAdapter();
-        mAdapter.notifyDataSetChanged();
-        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_photo,container,false);
-        addPhotoItems(new File(FileManager.getmCurrentDir()));
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.photo_recycler_view);
-        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL));
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refresh();
-                Snackbar.make(view,"刷新完成~",Snackbar.LENGTH_SHORT)
-                        .setAction("我造了！", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-
-                            }
-                        })
-                        .show();
-            }
-        });
-        Log.i(TAG, "onCreate: 跳出循环了！");
-        setupAdapter();
+        initViews(view);
         return view;
     }
 
@@ -183,6 +206,10 @@ public class GallaryPhotoFragment extends Fragment {
             items = l;
         }
 
+        public void setItems(List<PhotoItem> items) {
+            this.items = items;
+        }
+
         @Override
         public PhotoHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(getActivity());
@@ -194,8 +221,6 @@ public class GallaryPhotoFragment extends Fragment {
         @Override
         public void onBindViewHolder(PhotoHolder holder, int position) {
             PhotoItem mItem = items.get(position);
-            Drawable drawable = BitmapDrawable.createFromPath(mItem.getPath());
-//            holder.bindDrawable(drawable);
             holder.bindWithGlide(mItem);
             holder.bindTitle(mItem.getTitle());
             Log.i(TAG, "onBindViewHolder: 要解析的路径:"+mItem.getPath());
