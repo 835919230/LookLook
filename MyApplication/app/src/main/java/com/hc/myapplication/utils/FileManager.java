@@ -5,13 +5,17 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.hc.myapplication.R;
-import com.hc.myapplication.Server.MultipartServer;
+import com.hc.myapplication.server.MultipartServer;
+import com.hc.myapplication.ui.model.PhotoItem;
 
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by 诚 on 2016/7/19.
@@ -65,5 +69,31 @@ public class FileManager {
         }
         if (file.exists())
             System.out.println("yes it is");
+    }
+
+    public static void addPhotoItems(File root, List<PhotoItem> mItems){
+        File[] allFileList = root.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File file, String s) {
+                File f = new File(file,s);
+                //Log.i(TAG, "accept: 扫描到的文件名："+f.getName());
+                return !f.getName().equals("html");
+            }
+        });
+        if (allFileList.length <= 0)
+            return;
+
+        for (File file : allFileList) {
+            if (!file.isDirectory()) {
+                PhotoItem item = new PhotoItem();
+                item.setTitle(file.getName());
+                item.setDate(new Date(file.lastModified()));
+                item.setPath(file.getPath());
+                //Log.i(TAG, "addPhotoItems: 文件Path:"+item.getPath());
+                mItems.add(item);
+            } else {
+                addPhotoItems(file, mItems);
+            }
+        }
     }
 }

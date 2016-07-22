@@ -13,11 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.hc.myapplication.R;
-import com.hc.myapplication.Server.MultipartServer;
+import com.hc.myapplication.server.MultipartServer;
 import com.hc.myapplication.utils.FileManager;
 
 import java.io.IOException;

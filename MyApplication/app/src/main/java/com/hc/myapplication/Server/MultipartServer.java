@@ -1,8 +1,5 @@
-package com.hc.myapplication.Server;
+package com.hc.myapplication.server;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
@@ -20,7 +17,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -425,6 +421,7 @@ public class MultipartServer extends NanoHTTPD {
 
     /**
      * 默认的响应方法，调试用
+     * 弃用
      * @return Response
      */
     @Deprecated

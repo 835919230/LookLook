@@ -25,7 +25,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.GallaryPhotoActivity">
-
+        </activity>
+        <activity android:name=".ui.PhotoPagerActivity">
         </activity>
     </application>
 
