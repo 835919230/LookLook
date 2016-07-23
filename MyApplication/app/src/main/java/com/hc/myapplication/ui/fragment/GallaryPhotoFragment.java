@@ -98,7 +98,7 @@ public class GallaryPhotoFragment extends Fragment {
     private void initViews(final View view) {
         initRecyclerView(view);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
-        mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(R.color.colorPrimary);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

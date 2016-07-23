@@ -42,13 +42,23 @@ public class MultipartServer extends NanoHTTPD {
 
     private String mCurrentDir = Environment.getExternalStorageDirectory().getAbsolutePath().toString()+"/youqubao";
     public File htmlFile = new File(mCurrentDir+"/html");
-    public MultipartServer(){
+    private MultipartServer(){
         this(8080);
     }
 
-    public int mPort = 8080;//默认端口等于8080
+    public static int mPort = 8080;//默认端口等于8080
 
-    public MultipartServer(int port) {
+    private static MultipartServer mServer;
+
+    public static MultipartServer newInstance(){
+        return new MultipartServer(mPort);
+    }
+
+    public static MultipartServer newInstance(int port){
+        return new MultipartServer(port);
+    }
+
+    private MultipartServer(int port) {
         super(port);
         mPort = port;
         File f = new File(mCurrentDir);

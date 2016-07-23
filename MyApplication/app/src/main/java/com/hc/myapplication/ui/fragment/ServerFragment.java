@@ -30,7 +30,7 @@ public class ServerFragment extends Fragment {
 
     private String TAG = "ServerFragment";
 
-    private MultipartServer mServer = new MultipartServer();
+    private MultipartServer mServer ;
 
     public static ServerFragment newInstance(){
         return new ServerFragment();
@@ -47,7 +47,7 @@ public class ServerFragment extends Fragment {
                 Snackbar.make(getView(),"服务器已启动",Snackbar.LENGTH_SHORT).show();
             } catch (IOException e) {
                 Log.e(TAG, "startServer: ", e);
-                mServer = new MultipartServer(++mServer.mPort);
+                mServer = MultipartServer.newInstance();
                 startServer(view);
             }
         } else {
@@ -72,6 +72,7 @@ public class ServerFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate: Fragment Create");
+        mServer = MultipartServer.newInstance();
         updateView();
         initFiles();
     }

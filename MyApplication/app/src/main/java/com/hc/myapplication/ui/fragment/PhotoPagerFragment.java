@@ -1,6 +1,7 @@
 package com.hc.myapplication.ui.fragment;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,9 +18,14 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.hc.myapplication.R;
+import com.hc.myapplication.server.MultipartServer;
 import com.hc.myapplication.ui.PhotoPagerActivity;
+import com.hc.myapplication.ui.TwoDimensionCodeActivity;
 import com.hc.myapplication.ui.model.PhotoItem;
 import com.hc.myapplication.ui.model.PhotoItemLab;
+import com.hc.myapplication.utils.FileManager;
+import com.hc.myapplication.utils.WiFiUtils;
+import com.xys.libzxing.zxing.encoding.EncodingUtils;
 
 import java.io.File;
 import java.io.Serializable;
@@ -101,6 +107,8 @@ public class PhotoPagerFragment extends Fragment {
                     
                     case R.id.action_generate_two_dimension:
                         // TODO: 2016/7/23  完成生成二维码功能
+                        Intent itn = TwoDimensionCodeActivity.newIntent(getActivity(),mItem.getId());
+                        startActivity(itn);
                         break;
                 }
                 return false;
@@ -131,8 +139,8 @@ public class PhotoPagerFragment extends Fragment {
             };
             PhotoPagerActivity.mViewPager.setAdapter(PhotoPagerActivity.mAdapter);
             PhotoPagerActivity.mViewPager.setCurrentItem((data.getExtras().getInt("position")),true);
-            if (getActivity().getSupportFragmentManager().getFragments().size() <= 0)
-                getActivity().finish();
+//            if (getActivity().getSupportFragmentManager().getFragments().size() <= 0)
+//                getActivity().finish();
         }
     }
 }

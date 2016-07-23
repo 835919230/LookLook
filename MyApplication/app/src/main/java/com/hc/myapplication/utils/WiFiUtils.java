@@ -10,6 +10,7 @@ import android.net.wifi.WifiManager;
 public class WiFiUtils {
 
     public static boolean isWiFiActive(){
+        // TODO: 2016/7/23 判断WiFi状态的方法
         return true;
     }
 

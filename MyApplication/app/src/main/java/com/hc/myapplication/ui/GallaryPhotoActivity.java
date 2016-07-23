@@ -10,6 +10,7 @@ import android.view.MenuItem;
 
 import com.hc.myapplication.R;
 import com.hc.myapplication.ui.fragment.GallaryPhotoFragment;
+import com.hc.myapplication.utils.Downloader;
 import com.xys.libzxing.zxing.activity.CaptureActivity;
 
 public class GallaryPhotoActivity extends AppCompatActivity {
@@ -57,7 +58,13 @@ public class GallaryPhotoActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
             // TODO: 2016/7/23 完成二维码扫描下载功能
-            Snackbar.make(getCurrentFocus(),"扫描完成",Snackbar.LENGTH_SHORT).show();
+            String urlSpec = data.getStringExtra("result");
+            if (urlSpec != null && urlSpec.length() > 0) {
+                Downloader.downFile(urlSpec);
+                Snackbar.make(getCurrentFocus(), "扫描完成，下载即将开始", Snackbar.LENGTH_SHORT).show();
+            } else {
+                Snackbar.make(getCurrentFocus(), "失败，地址有问题", Snackbar.LENGTH_SHORT).show();
+            }
         }
     }
 }

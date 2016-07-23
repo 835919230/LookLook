@@ -31,6 +31,12 @@ public class FileManager {
     public static final String TAG = "FileManager";
     private static final String mCurrentDir = Environment.getExternalStorageDirectory().getAbsolutePath().toString()+"/youqubao";
     private static final File htmlFile = new File(mCurrentDir+"/html");
+    private static final File downloadFile = new File(mCurrentDir+"/download");
+
+    public static File getDownloadFile() {
+        return downloadFile;
+    }
+
     public static String getmCurrentDir() {
         return mCurrentDir;
     }

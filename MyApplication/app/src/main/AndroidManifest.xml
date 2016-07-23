@@ -28,6 +28,8 @@
         </activity>
         <activity android:name=".ui.PhotoPagerActivity">
         </activity>
+        <activity android:name=".ui.TwoDimensionCodeActivity">
+        </activity>
     </application>
 
 </manifest>
