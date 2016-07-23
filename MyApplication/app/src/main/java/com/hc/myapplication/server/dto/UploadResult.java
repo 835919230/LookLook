@@ -1,4 +1,4 @@
-package com.hc.myapplication.dto;
+package com.hc.myapplication.server.dto;
 
 /**
  * Created by 诚 on 2016/7/3.

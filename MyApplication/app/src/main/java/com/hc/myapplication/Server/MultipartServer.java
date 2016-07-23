@@ -4,10 +4,10 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
-import com.hc.myapplication.dto.RenameResult;
-import com.hc.myapplication.dto.UploadResult;
-import com.hc.myapplication.enums.MimeType;
-import com.hc.myapplication.model.FileModel;
+import com.hc.myapplication.server.dto.RenameResult;
+import com.hc.myapplication.server.dto.UploadResult;
+import com.hc.myapplication.server.enums.MimeType;
+import com.hc.myapplication.server.model.FileModel;
 import com.hc.myapplication.utils.FileManager;
 
 import org.apache.commons.io.FileUtils;

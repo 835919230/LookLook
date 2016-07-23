@@ -1,12 +1,13 @@
 package com.hc.myapplication.ui.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
 /**
  * Created by 诚 on 2016/7/20.
  */
-public class PhotoItem {
+public class PhotoItem implements Serializable{
     private UUID mId;
     private String mTitle;
     private Date mDate;

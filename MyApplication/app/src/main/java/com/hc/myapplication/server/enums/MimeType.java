@@ -1,4 +1,4 @@
-package com.hc.myapplication.enums;
+package com.hc.myapplication.server.enums;
 
 /**
  * Created by 何肸 on 2016/7/1.

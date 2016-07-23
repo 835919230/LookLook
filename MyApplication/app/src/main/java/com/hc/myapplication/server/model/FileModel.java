@@ -1,4 +1,4 @@
-package com.hc.myapplication.model;
+package com.hc.myapplication.server.model;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

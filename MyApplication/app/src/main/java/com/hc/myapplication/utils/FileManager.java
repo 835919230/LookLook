@@ -96,4 +96,21 @@ public class FileManager {
             }
         }
     }
+
+
+    public static void initFiles(final Activity activity, final MultipartServer mServer){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                FileManager.writeFile(activity,R.raw.hello,FileManager.INDEX,mServer);
+                FileManager.writeFile(activity,R.raw.bootstrap,FileManager.BOOTSTRAP,mServer);
+                FileManager.writeFile(activity,R.raw.jquery,FileManager.JQUERY,mServer);
+                FileManager.writeFile(activity,R.raw.favicon,FileManager.FAVICON,mServer);
+                FileManager.writeFile(activity,R.raw.jquery_form,FileManager.JQEURY_FORM,mServer);
+                FileManager.writeFile(activity,R.raw.uploader,FileManager.UPLOADER,mServer);
+                FileManager.writeFile(activity,R.raw.app,FileManager.APP,mServer);
+                FileManager.judgeFileExsits();
+            }
+        }).start();
+    }
 }

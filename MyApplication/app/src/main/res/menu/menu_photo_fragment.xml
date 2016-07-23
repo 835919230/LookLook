@@ -3,8 +3,14 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_back"
-        android:icon="@mipmap/ic_menu_revert"
+        android:icon="@mipmap/ic_keyboard_backspace_white_36dp"
         android:title="返回"
         android:orderInCategory="80"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_scan_two_dimension"
+        android:icon="@drawable/scan_two_dimension"
+        android:title="返回"
+        android:orderInCategory="60"
         app:showAsAction="ifRoom"/>
 </menu>

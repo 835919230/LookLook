@@ -4,7 +4,7 @@
     <!--相册菜单-->
     <item
         android:id="@+id/action_gallery"
-        android:icon="@mipmap/ic_menu_gallery"
+        android:icon="@mipmap/ic_collections_white_36dp"
         android:orderInCategory="80"
         android:title="相册"
         app:showAsAction="ifRoom" />

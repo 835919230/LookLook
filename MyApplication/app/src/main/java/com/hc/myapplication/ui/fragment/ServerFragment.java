@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide;
 import com.hc.myapplication.R;
 import com.hc.myapplication.server.MultipartServer;
 import com.hc.myapplication.utils.FileManager;
+import com.hc.myapplication.utils.WiFiUtils;
 
 import java.io.IOException;
 
@@ -43,37 +44,26 @@ public class ServerFragment extends Fragment {
             try {
                 mServer.start();
                 updateView();
+                Snackbar.make(getView(),"服务器已启动",Snackbar.LENGTH_SHORT).show();
             } catch (IOException e) {
                 Log.e(TAG, "startServer: ", e);
-                updateView();
+                mServer = new MultipartServer(++mServer.mPort);
+                startServer(view);
             }
         } else {
 
         }
-        Snackbar.make(getView(),"服务器已启动",Snackbar.LENGTH_SHORT).show();
     }
 
     private void initFiles() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                FileManager.writeFile(getActivity(),R.raw.hello,FileManager.INDEX,mServer);
-                FileManager.writeFile(getActivity(),R.raw.bootstrap,FileManager.BOOTSTRAP,mServer);
-                FileManager.writeFile(getActivity(),R.raw.jquery,FileManager.JQUERY,mServer);
-                FileManager.writeFile(getActivity(),R.raw.favicon,FileManager.FAVICON,mServer);
-                FileManager.writeFile(getActivity(),R.raw.jquery_form,FileManager.JQEURY_FORM,mServer);
-                FileManager.writeFile(getActivity(),R.raw.uploader,FileManager.UPLOADER,mServer);
-                FileManager.writeFile(getActivity(),R.raw.app,FileManager.APP,mServer);
-                FileManager.judgeFileExsits();
-            }
-        }).start();
+        FileManager.initFiles(getActivity(),mServer);
     }
 
     private void updateView(){
         Log.i(TAG, "updateView: 服务器的运行状态:"+(mServer.isAlive()?"还活着":"死了"));
         if (mServer == null || !mServer.isAlive())
             return;
-        mButton.setText("http".toLowerCase()+"://"+getLocalIpStr(getContext())+":"+mServer.mPort);
+        mButton.setText("http".toLowerCase()+"://"+ WiFiUtils.getLocalIpStr(getContext())+":"+mServer.mPort);
         mButton.setEnabled(false);
         Log.i(TAG, String.valueOf("updateView: "+mButton == null));
     }
@@ -112,24 +102,4 @@ public class ServerFragment extends Fragment {
         return view;
     }
 
-    /**
-     * 拿到手机连接wifi后的IP地址
-     * @param context
-     * @author HC
-     * @return
-     */
-    private String getLocalIpStr(Context context) {
-        WifiManager wifiManager=(WifiManager)context.getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        return intToIpAddr(wifiInfo.getIpAddress());
-    }
-    /**
-     * 拿到IP地址后输出
-     * @author HC
-     * @param ip
-     * @return
-     */
-    private String intToIpAddr(int ip) {
-        return (ip & 0xff) + "." + ((ip>>8)&0xff) + "." + ((ip>>16)&0xff) + "." + ((ip>>24)&0xff);
-    }
 }

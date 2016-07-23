@@ -14,5 +14,4 @@
         android:clipToPadding="false"
         android:scrollbars="none"></android.support.v7.widget.RecyclerView>
 
-    <include layout="@layout/footer"/>
 </android.support.v4.widget.SwipeRefreshLayout>
