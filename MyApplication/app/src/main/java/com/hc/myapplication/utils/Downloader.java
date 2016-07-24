@@ -1,7 +1,9 @@
 package com.hc.myapplication.utils;
 
 
+import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.apache.commons.io.FileUtils;
 
@@ -27,6 +29,14 @@ public class Downloader{
             public void run() {
                 try {
                     URL url = new URL(urlSpec);
+                    Log.i(TAG, "run: urlSpec"+urlSpec);
+                    int i = urlSpec.lastIndexOf(".");
+                    String type = urlSpec.substring(i);
+                    if (!(type.trim().equals(".jpg")
+                            || type.trim().equals(".png")
+                            || type.trim().equals(".jpeg"))) {
+                        return;
+                    }
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     InputStream in = connection.getInputStream();
@@ -39,7 +49,7 @@ public class Downloader{
                         out.write(buffer,0,byteRead);
                     }
                     byte[] bytes = out.toByteArray();
-                    File file = new File(FileManager.getDownloadFile(),new Date().toString());
+                    File file = new File(FileManager.getDownloadFile(),new Date().getTime()+type);
                     FileUtils.writeByteArrayToFile(file,bytes);
                 } catch (MalformedURLException e) {
                     Log.e(TAG, "run: ", e);
