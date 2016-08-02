@@ -11,11 +11,19 @@ import android.net.wifi.WifiManager;
  */
 public class WiFiUtils {
 
+    /**
+     * 判断WiFi是否连接的方法
+     * @author HC
+     * @param context 系统的上下文对象，负责拿到WiFi的状态
+     * @return 是否连接WiFi的布尔值
+     */
     public static boolean isWiFiActive(Context context){
         boolean flag = false;
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo.State state = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
+        NetworkInfo.State state = manager
+                                .getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+                                .getState();
         if (state == NetworkInfo.State.CONNECTED) {
             flag = true;
         }
