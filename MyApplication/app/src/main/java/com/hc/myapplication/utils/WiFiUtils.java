@@ -2,6 +2,7 @@ package com.hc.myapplication.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
@@ -13,7 +14,9 @@ public class WiFiUtils {
     public static boolean isWiFiActive(Context context){
         boolean flag = false;
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (manager.getActiveNetworkInfo() != null) {
+
+        NetworkInfo.State state = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
+        if (state == NetworkInfo.State.CONNECTED) {
             flag = true;
         }
         return flag;
