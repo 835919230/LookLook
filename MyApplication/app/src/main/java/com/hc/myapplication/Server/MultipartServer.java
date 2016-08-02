@@ -46,16 +46,31 @@ public class MultipartServer extends NanoHTTPD {
         this(8080);
     }
 
-    public static int mPort = 8080;//默认端口等于8080
+    private int mPort = 8080;//默认端口等于8080
+
+    private static int defaultPort = 8080;
 
     private static MultipartServer mServer;
 
     public static MultipartServer newInstance(){
-        return new MultipartServer(mPort);
+        return new MultipartServer(defaultPort);
+    }
+
+    public synchronized void increasePortNumber(){
+        this.mPort++;
     }
 
     public static MultipartServer newInstance(int port){
         return new MultipartServer(port);
+    }
+
+
+    public int getPort() {
+        return mPort;
+    }
+
+    public void setPort(int port) {
+        mPort = port;
     }
 
     private MultipartServer(int port) {

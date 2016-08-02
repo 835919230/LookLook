@@ -66,7 +66,7 @@ public class TwoDimensionCodeFragment extends Fragment {
             e.printStackTrace();
         }
         String localIpStr = WiFiUtils.getLocalIpStr(getActivity());
-        String host = "http://"+localIpStr+":"+ mServer.mPort;
+        String host = "http://"+localIpStr+":"+ mServer.getPort();
         String currentDir = FileManager.getmCurrentDir();
         String path = mItem.getPath();
         int indexOf = path.lastIndexOf(currentDir);

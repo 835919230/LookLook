@@ -47,7 +47,7 @@ public class ServerFragment extends Fragment {
                 Snackbar.make(getView(),"服务器已启动",Snackbar.LENGTH_SHORT).show();
             } catch (IOException e) {
                 Log.e(TAG, "startServer: ", e);
-                mServer = MultipartServer.newInstance();
+                mServer.increasePortNumber();
                 startServer(view);
             }
         } else {
@@ -63,7 +63,7 @@ public class ServerFragment extends Fragment {
         Log.i(TAG, "updateView: 服务器的运行状态:"+(mServer.isAlive()?"还活着":"死了"));
         if (mServer == null || !mServer.isAlive())
             return;
-        mButton.setText("http".toLowerCase()+"://"+ WiFiUtils.getLocalIpStr(getContext())+":"+mServer.mPort);
+        mButton.setText("http".toLowerCase()+"://"+ WiFiUtils.getLocalIpStr(getContext())+":"+mServer.getPort());
         mButton.setEnabled(false);
         Log.i(TAG, String.valueOf("updateView: "+mButton == null));
     }
@@ -95,7 +95,10 @@ public class ServerFragment extends Fragment {
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startServer(view);
+                if (WiFiUtils.isWiFiActive(getActivity()))
+                    startServer(view);
+                else
+                    Snackbar.make(getView(),"请先开启WiFi哦！",Snackbar.LENGTH_SHORT).show();
             }
         });
         ivServerBg = (ImageView) view.findViewById(R.id.iv_server_bg);

@@ -1,6 +1,7 @@
 package com.hc.myapplication.utils;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
@@ -9,9 +10,13 @@ import android.net.wifi.WifiManager;
  */
 public class WiFiUtils {
 
-    public static boolean isWiFiActive(){
-        // TODO: 2016/7/23 判断WiFi状态的方法
-        return true;
+    public static boolean isWiFiActive(Context context){
+        boolean flag = false;
+        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (manager.getActiveNetworkInfo() != null) {
+            flag = true;
+        }
+        return flag;
     }
 
     /**
