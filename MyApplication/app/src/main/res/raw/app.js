@@ -3,7 +3,7 @@
  */
 var app = {
     host:"http://"+window.location.host,
-    pathname:window.location.pathname,
+    pathname:decodeURI(window.location.pathname),
 
     initUrl:"http://"+window.location.host+"/ajax",
     uploadUrl:"http://"+window.location.host+"/uploadfile",
